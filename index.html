@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Harshendra Rami | Data engineer and tool maker</title>
+<meta name="description" content="Browser extensions, apps and notes by Harshendra Rami, all in one place.">
+<!-- Social previews can't run JavaScript, so edit these three by hand if you change your name or tagline. -->
+<meta property="og:type" content="website">
+<meta property="og:title" content="Harshendra Rami | Data engineer and tool maker">
+<meta property="og:description" content="Browser extensions, apps and notes, all in one place.">
+<meta name="theme-color" content="#ECEEF0">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='9' fill='none' stroke='%233340E8' stroke-width='5'/%3E%3C/svg%3E">
+<script>
+  /* Apply a saved theme before first paint so there is no flash. */
+  try { var t = localStorage.getItem('theme'); if (t) document.documentElement.setAttribute('data-theme', t); } catch (e) {}
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..700&display=swap">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<a class="skip" href="#work">Skip to content</a>
+<div id="progress" aria-hidden="true"></div>
+
+<header class="wrap top">
+  <a class="brand" id="brand" href="#top" aria-label="Back to top"><span class="mark" aria-hidden="true"></span><span id="status"></span></a>
+  <nav aria-label="Main">
+    <a href="#work">Work</a>
+    <a href="#notes">Notes</a>
+    <a href="#about">About</a>
+    <a href="#support">Support</a>
+    <a href="#contact">Contact</a>
+    <button class="textbtn" id="theme" type="button"></button>
+  </nav>
+</header>
+
+<main id="top">
+  <section class="hero wrap" aria-label="Introduction">
+    <p class="greet" id="greet"></p>
+    <h1 class="name" id="name">Your Name</h1>
+    <div class="rule" aria-hidden="true"></div>
+    <p class="lede" id="intro"></p>
+    <div class="links" id="hero-links"></div>
+  </section>
+
+  <div class="wrap">
+    <section class="sec" id="work">
+      <h2>Work</h2>
+      <div>
+        <div class="chips" id="filters" role="group" aria-label="Filter by type"></div>
+        <ul class="list" id="products"></ul>
+        <a class="btn more" id="work-more" href="works.html" hidden>See all work</a>
+      </div>
+    </section>
+
+    <section class="sec" id="notes">
+      <h2>Notes</h2>
+      <div>
+        <ul class="list" id="notes-list"></ul>
+        <button class="btn more" id="notes-more" type="button" hidden>Show all notes</button>
+      </div>
+    </section>
+
+    <section class="sec about" id="about">
+      <h2>About</h2>
+      <div>
+        <div id="about-text"></div>
+        <div class="facts" id="facts"></div>
+      </div>
+    </section>
+
+    <section class="sec" id="support">
+      <h2>Buy me a coffee</h2>
+      <div>
+        <p class="sub" id="support-msg"></p>
+        <div class="coffee">
+          <div class="cup">
+            <svg viewBox="0 0 130 130" role="img" aria-label="A coffee cup that fills as the amount grows">
+              <defs>
+                <clipPath id="cupclip"><path d="M20 30H100V78A30 30 0 0 1 70 108H50A30 30 0 0 1 20 78Z"/></clipPath>
+              </defs>
+              <g clip-path="url(#cupclip)">
+                <g id="liquid" style="transform:translateY(60px)">
+                  <path class="liquid wave" d="M-60 0q15-5 30 0t30 0t30 0t30 0t30 0t30 0t30 0t30 0t30 0t30 0t30 0t30 0V160H-60Z"/>
+                </g>
+              </g>
+              <path class="outline" d="M20 30H100V78A30 30 0 0 1 70 108H50A30 30 0 0 1 20 78Z"/>
+              <path class="outline" d="M100 44h6a15 15 0 0 1 0 30h-8"/>
+              <path class="outline" d="M32 120H88"/>
+            </svg>
+            <p class="amt" id="amt" aria-live="polite"></p>
+          </div>
+          <div>
+            <div class="coins" id="coins" role="group" aria-label="Currency"></div>
+            <p class="curname" id="curname" aria-live="polite"></p>
+            <div class="amounts" id="amounts" role="group" aria-label="Pick an amount"></div>
+            <label class="custom">Any amount
+              <input id="custom" type="number" inputmode="numeric" min="1" step="1" placeholder="Your own">
+            </label>
+            <figure class="qr" id="qr" hidden><img id="qr-img" alt="UPI QR code" width="144" height="144"><figcaption>Scan with any UPI app, then enter any amount.</figcaption></figure>
+            <div class="actions">
+              <a class="btn primary" id="upi" role="button" aria-disabled="true">UPI</a>
+              <button class="btn primary" id="rzp" type="button" hidden></button>
+              <a class="btn" id="paypal" target="_blank" rel="noopener noreferrer" hidden></a>
+              <a class="btn" id="card" target="_blank" rel="noopener noreferrer" hidden></a>
+              <button class="btn" id="copy" type="button" hidden>Copy UPI ID</button>
+            </div>
+            <p class="hint" id="nopay" hidden></p>
+            <p class="hint">Pick your currency and the amounts convert. Rates refresh live (<a href="https://www.exchangerate-api.com" target="_blank" rel="noopener noreferrer">ExchangeRate-API</a>). On a phone, the UPI button opens your payment app with the amount filled in. On a computer, scan the QR with your phone or copy the UPI ID.</p>
+          </div>
+        </div>
+      
+  </div>
+    </section>
+
+    <section class="sec" id="contact">
+      <h2>Say hello</h2>
+      <div>
+        <p class="sub" id="contact-note"></p>
+        <form class="cform" id="cform" novalidate>
+          <input name="name" type="text" placeholder="Your name" aria-label="Your name" autocomplete="name">
+          <input name="email" type="email" placeholder="Your email" aria-label="Your email" autocomplete="email" required>
+          <textarea name="message" rows="4" placeholder="What is on your mind?" aria-label="Message" required></textarea>
+          <input class="hp" name="website" type="text" tabindex="-1" autocomplete="off" aria-hidden="true">
+          <div class="actions">
+            <button class="btn primary" type="submit">Send message</button>
+            <a class="btn" id="cresume" target="_blank" rel="noopener noreferrer" hidden>Resume</a>
+            <button class="btn" id="cemail" type="button" hidden>Copy email</button>
+          </div>
+          <p class="hint" id="cstatus" role="status"></p>
+        </form>
+      </div>
+    </section>
+
+    <footer class="foot">
+      <span id="copyright"></span>
+      <span><button class="textbtn" id="surprise" type="button">Surprise me</button> &nbsp;&middot;&nbsp; <a href="#top">Back to top</a></span>
+    </footer>
+  </div>
+</main>
+
+<script src="data.js"></script>
+<script src="app.js"></script>
+<div id="fx" aria-hidden="true"></div>
+<script src="moods.js"></script>
+</body>
+</html>

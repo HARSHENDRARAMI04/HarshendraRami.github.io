@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>All work</title>
+<meta name="description" content="Browser extensions, apps and notes by Harshendra Rami, all in one place.">
+<!-- Social previews can't run JavaScript, so edit these three by hand if you change your name or tagline. -->
+<meta property="og:type" content="website">
+<meta property="og:title" content="Harshendra Rami | Data engineer and tool maker">
+<meta property="og:description" content="Browser extensions, apps and notes, all in one place.">
+<meta name="theme-color" content="#ECEEF0">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='9' fill='none' stroke='%233340E8' stroke-width='5'/%3E%3C/svg%3E">
+<script>
+  /* Apply a saved theme before first paint so there is no flash. */
+  try { var t = localStorage.getItem('theme'); if (t) document.documentElement.setAttribute('data-theme', t); } catch (e) {}
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..700&display=swap">
+<link rel="stylesheet" href="style.css">
+</head>
+<body data-works>
+<a class="skip" href="#work">Skip to content</a>
+<div id="progress" aria-hidden="true"></div>
+
+<header class="wrap top">
+  <a class="brand" id="brand" href="index.html" aria-label="Back to home"><span class="mark" aria-hidden="true"></span><span id="status"></span></a>
+  <nav aria-label="Main">
+    <a href="index.html">Home</a>
+    <a href="index.html#contact">Contact</a>
+    <button class="textbtn" id="theme" type="button"></button>
+  </nav>
+</header>
+
+<main id="top">
+  <div class="wrap">
+    <section class="sec" id="work">
+      <h2>All work</h2>
+      <div>
+        <p class="sub"><a href="index.html">&larr; Back home</a></p>
+        <div class="chips" id="filters" role="group" aria-label="Filter by type"></div>
+        <ul class="list" id="products"></ul>
+      </div>
+    </section>
+
+    <footer class="foot">
+      <span id="copyright"></span>
+      <span><button class="textbtn" id="surprise" type="button">Surprise me</button> &nbsp;&middot;&nbsp; <a href="#top">Back to top</a></span>
+    </footer>
+  </div>
+</main>
+<script src="data.js"></script>
+<script src="app.js"></script>
+<div id="fx" aria-hidden="true"></div>
+<script src="moods.js"></script>
+</body>
+</html>

@@ -1,0 +1,9 @@
+{
+  "name": "my-website",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "deploy:worker": "node scripts/deploy-worker.mjs",
+    "logs:worker": "npx --yes wrangler@4 tail"
+  }
+}
