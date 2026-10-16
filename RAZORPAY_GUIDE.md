@@ -4,14 +4,27 @@
 ```
 Visitor's browser (your GitHub Pages site)
    1. picks a currency and amount
-   2. asks YOUR Worker: "make an order for 5 USD"          (no keys in the browser)
-Cloudflare Worker (worker/index.js + functions/api/order.js)
-   3. checks the request, then asks Razorpay to create the order using your secret key
-   4. returns the order id and your public Key Id
+   2. asks YOUR Worker: POST /create-order  "make an order for 5 USD"    (no keys in the browser)
+Cloudflare Worker (worker/index.js -> functions/api/order.js)
+   3. validates the request, asks Razorpay to create the order with your secret key
+   4. returns { order_id, amount, currency, key }   (key = the public Key Id)
 Browser
-   5. opens Razorpay's payment popup with that order; the visitor pays Razorpay directly
+   5. opens Razorpay's payment popup for that order; the visitor pays Razorpay directly
+   6. Razorpay hands the browser razorpay_payment_id, razorpay_order_id, razorpay_signature
+   7. browser sends those three to YOUR Worker: POST /verify-payment
+Cloudflare Worker (functions/api/verify-payment.js)
+   8. computes HMAC-SHA256(order_id + "|" + payment_id) with the secret and compares it to the signature
+   9. match -> { verified: true } and the page says thank you. Mismatch -> 400 and the page does NOT say paid.
 ```
 Your site never sees card details, and your Key Secret never leaves Cloudflare.
+
+Endpoints (on the Worker URL, or under `/api/` if you host on Cloudflare Pages):
+| Endpoint | Pages Functions path | Does |
+|---|---|---|
+| `POST /create-order` (also `POST /`) | `/api/order` | creates the order |
+| `POST /verify-payment` | `/api/verify-payment` | checks the signature |
+
+Error codes: create-order returns 400 for a bad amount or currency, 401 if Razorpay rejects your keys, 500 for other Razorpay errors. verify-payment returns 400 for a missing field or a signature mismatch.
 
 ## Where every value lives
 | Value | Secret? | Where it lives | How to change |
@@ -83,6 +96,8 @@ Watch the Worker live while you test: `npm run logs:worker`.
 | "Could not start payment" at once | `SITE_ORIGIN` does not match the live site (403) | fix `.env`, redeploy Worker |
 | Same, and logs show a 502 | wrong keys, or currency not enabled | check keys in `.env` (test vs live), check International Payments |
 | Works in INR, fails in USD/EUR | International Payments not approved | request it in the dashboard |
+| Card payments are unavailable (create-order 401) | Key Id and Secret do not match, or test key with live secret | fix `.env`, redeploy Worker |
+| "I could not confirm this payment" after paying | signature mismatch: secret on the Worker differs from the one used to create the order | redeploy the Worker so both steps use the same secret; check the payment in the Razorpay dashboard |
 | Popup opens but rejects the card | test card in live mode, or the reverse | match the key mode to the card |
 | Old key still in use after changing `.env` | forgot to redeploy | `npm run deploy:worker` |
 | Changes to CSS/JS not showing | browser cache | hard refresh (Ctrl+Shift+R) |

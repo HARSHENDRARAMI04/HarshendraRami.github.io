@@ -142,7 +142,7 @@ window.SITE = {
     payeeName: "Harshendra Rami",
     upiId: "aerospacerami@oksbi",
     // Pay-by-card in any currency (needs the Razorpay setup in SETUP.md). Leave "" until then.
-    checkoutEndpoint: "",          // filled in automatically by: npm run deploy:worker
+    checkoutEndpoint: "https://coffee-orders.hrcreates2021.workers.dev",          // filled in automatically by: npm run deploy:worker
     paypalMe: "",                  // optional: your PayPal.Me name, e.g. "harshendra"
     // Used only if rates.json has not loaded. Approximate: 1 rupee in each currency.
     fallbackRates: { USD: 0.0113, EUR: 0.0097, GBP: 0.0085, AUD: 0.0174, CAD: 0.0158, SGD: 0.0146, AED: 0.0415 },
