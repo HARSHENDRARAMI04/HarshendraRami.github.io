@@ -28,7 +28,7 @@ img{max-width:100%;height:auto}
 .skip:focus{left:0}
 
 /* header */
-.top{display:flex;flex-wrap:wrap;gap:.75rem 2rem;justify-content:space-between;align-items:center;padding-top:1.5rem;padding-bottom:1.5rem}
+.top{position:relative;display:flex;align-items:center;gap:.5rem 1rem;padding-top:1.1rem;padding-bottom:1.1rem}
 .brand{display:inline-flex;align-items:center;gap:.65rem;font-weight:500;font-size:.95rem;text-decoration:none;color:var(--muted)}
 .mark{width:.8rem;height:.8rem;border-radius:50%;border:3px solid var(--accent);flex:none;animation:breathe 3.4s ease-in-out infinite}
 @keyframes breathe{50%{transform:scale(1.35)}}
@@ -38,7 +38,24 @@ img{max-width:100%;height:auto}
 .qr img{width:9rem;height:9rem;image-rendering:pixelated;border-radius:.5rem;background:#fff}
 .qr figcaption{color:var(--muted);font-size:.9rem;margin-top:.4rem}
 @media (hover:hover) and (pointer:fine){.qr:not([hidden]){display:block}}
-.top nav{display:flex;flex-wrap:wrap;gap:.25rem 1.5rem;align-items:center}
+.top nav{display:flex;gap:.25rem 1.5rem;align-items:center}
+.top .brand{margin-right:auto;min-width:0}
+.brand #status{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.iconbtn{display:grid;place-items:center;flex:none;width:2.5rem;height:2.5rem;padding:0;border-radius:50%;border:1.5px solid var(--line);background:transparent;color:var(--ink);cursor:pointer;transition:border-color .2s}
+.iconbtn:hover{border-color:var(--ink)}
+.iconbtn svg{width:1.25rem;height:1.25rem;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.menubtn{display:none}
+.menubtn .x{display:none}
+.menubtn[aria-expanded="true"] .o{display:none}
+.menubtn[aria-expanded="true"] .x{display:inline}
+@keyframes menuin{from{opacity:0;transform:translateY(-6px)}}
+@media (max-width:719px){
+  .menubtn{display:grid;order:-1}
+  .top nav{display:none;position:absolute;top:100%;left:.75rem;right:.75rem;z-index:9;flex-direction:column;align-items:stretch;gap:0;padding:.5rem;background:var(--bg);border:1px solid var(--line);border-radius:1rem;box-shadow:0 14px 34px rgba(0,0,0,.2);animation:menuin .2s ease}
+  .top[data-menu="open"] nav{display:flex}
+  .top nav a{padding:.85rem 1rem;border-radius:.6rem;font-size:1.05rem}
+  .top nav a:hover{background:var(--line)}
+}
 .top nav a,.textbtn{color:var(--muted);text-decoration:none;font-size:.95rem;transition:color .2s}
 .top nav a:hover,.textbtn:hover{color:var(--ink)}
 .textbtn{background:none;border:0;font-family:inherit;cursor:pointer;padding:0}
@@ -236,6 +253,7 @@ html.js .rv.in{opacity:1;transform:none}
   .rule{animation:none;transform:none}
   .wave,.mark,.coin,[data-vibe="gym"] .name{animation:none;transition:none}
   .fxp,.pick{display:none}
+  .top nav{animation:none}
   .stage,.stage *{animation:none !important}
   #liquid,.detail,.chev{transition:none}
 }

@@ -98,7 +98,14 @@
   function currentTheme() {
     return root.getAttribute("data-theme") || (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
   }
-  function paintThemeBtn() { themeBtn.textContent = currentTheme() === "dark" ? "Light" : "Dark"; }
+  /* icon only: the sun appears in dark mode (tap for light), the moon in light mode (tap for dark) */
+  var SUN = '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>';
+  var MOON = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8 8 0 0 1 9.5 4 8 8 0 1 0 20 14.5z"/></svg>';
+  function paintThemeBtn() {
+    var dark = currentTheme() === "dark", label = dark ? "Switch to light theme" : "Switch to dark theme";
+    themeBtn.innerHTML = dark ? SUN : MOON;
+    themeBtn.setAttribute("aria-label", label); themeBtn.title = label;
+  }
   themeBtn.addEventListener("click", function () {
     var next = currentTheme() === "dark" ? "light" : "dark";
     root.setAttribute("data-theme", next);
@@ -106,6 +113,21 @@
     paintThemeBtn();
   });
   paintThemeBtn();
+
+  /* ---------- mobile menu ---------- */
+  var menuBtn = $("#menubtn"), hdr = document.querySelector(".top");
+  if (menuBtn && hdr) {
+    var setMenu = function (open) {
+      if (open) hdr.setAttribute("data-menu", "open"); else hdr.removeAttribute("data-menu");
+      menuBtn.setAttribute("aria-expanded", String(open));
+      menuBtn.setAttribute("aria-label", open ? "Close menu" : "Open menu");
+    };
+    menuBtn.addEventListener("click", function (e) { e.stopPropagation(); setMenu(menuBtn.getAttribute("aria-expanded") !== "true"); });
+    $("#menu").addEventListener("click", function (e) { if (e.target.closest("a")) setMenu(false); });
+    document.addEventListener("click", function (e) { if (!hdr.contains(e.target)) setMenu(false); });
+    document.addEventListener("keydown", function (e) { if (e.key === "Escape" && menuBtn.getAttribute("aria-expanded") === "true") { setMenu(false); menuBtn.focus(); } });
+    addEventListener("resize", function () { if (innerWidth >= 720) setMenu(false); });
+  }
 
   /* ---------- scroll life ---------- */
   var still = matchMedia("(prefers-reduced-motion: reduce)").matches;
