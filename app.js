@@ -344,7 +344,6 @@
     if (label) el.textContent = label;
   }
   function paint() {
-    if ($("#paystatus")) $("#paystatus").textContent = "";
     var ok = amount > 0, inr = cur === "INR";
     show(upi, inr && !!sp.upiId && ok, "upi://pay?pa=" + encodeURIComponent(sp.upiId || "") + "&pn=" + encodeURIComponent(sp.payeeName || name) + "&am=" + amount + "&cu=INR&tn=Coffee", "Pay " + money(amount) + " by UPI");
     show(rzp, !!sp.checkoutEndpoint && ok, "", "Pay " + money(amount) + (inr ? " by card or netbanking" : " by card"));
@@ -395,39 +394,20 @@
       var s = document.createElement("script"); s.src = "https://checkout.razorpay.com/v1/checkout.js"; s.onload = res; s.onerror = rej; document.head.appendChild(s);
     });
   }
-  var pst = $("#paystatus");
-  var note = function (t) { pst.textContent = t || ""; };
-  var fail = function (m) { var e = new Error(m); e.user = true; return e; };   // errors that are safe to show visitors
-  function api(url, body) {   // POST JSON to the payment server -> { status, data }
-    return fetch(url, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(body) })
-      .then(function (r) { return r.json().catch(function () { return {}; }).then(function (d) { return { status: r.status, data: d }; }); });
-  }
-  var verifyUrl = sp.checkoutEndpoint ? new URL("verify-payment", new URL(sp.checkoutEndpoint, location.href)).href : "";
-  var unconfirmed = function (id) { note("I could not confirm this payment. If you were charged, please email me with payment id " + id + "."); };
   rzp.addEventListener("click", function () {
     if (amount <= 0) return;
-    rzp.disabled = true; note("Starting secure checkout...");
-    api(sp.checkoutEndpoint, { amount: amount, currency: cur }).then(function (res) {
-      var o = res.data;
-      if (res.status === 400) throw fail(o.error || "Please check the amount.");
-      if (res.status !== 200 || !o.order_id) throw fail("Card payments are unavailable right now. Please try UPI or PayPal instead.");
-      return loadRzp().then(function () {
-        var box = new window.Razorpay({
-          key: o.key, order_id: o.order_id, amount: o.amount, currency: o.currency, name: name, description: "Buy me a coffee",
-          theme: { color: "#3340E8" },
-          modal: { ondismiss: function () { note("Payment cancelled. No money was taken."); rzp.disabled = false; } },
-          handler: function (resp) {   // paid: the server must confirm the signature before we say thank you
-            note("Confirming your payment...");
-            api(verifyUrl, { razorpay_order_id: resp.razorpay_order_id, razorpay_payment_id: resp.razorpay_payment_id, razorpay_signature: resp.razorpay_signature })
-              .then(function (v) { if (v.status === 200 && v.data.verified) note("Thank you! Your payment is confirmed."); else unconfirmed(resp.razorpay_payment_id); })
-              .catch(function () { unconfirmed(resp.razorpay_payment_id); })
-              .then(function () { rzp.disabled = false; });
-          }
+    rzp.disabled = true;
+    fetch(sp.checkoutEndpoint, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ amount: amount, currency: cur }) })
+      .then(function (r) { return r.json(); })
+      .then(function (o) {
+        if (!o.id) throw new Error("no order");
+        return loadRzp().then(function () {
+          new window.Razorpay({ key: o.key, order_id: o.id, amount: o.amount, currency: o.currency, name: name, description: "Buy me a coffee",
+            theme: { color: "#3340E8" }, handler: function () { rzp.textContent = "Thank you!"; } }).open();
         });
-        box.on("payment.failed", function (f) { note("Payment failed: " + ((f.error && f.error.description) || "please try again or use another method.")); rzp.disabled = false; });
-        box.open();
-      });
-    }).catch(function (e) { note(e && e.user ? e.message : "Could not start payment. Please try again."); rzp.disabled = false; });
+      })
+      .catch(function () { rzp.textContent = "Could not start payment. Try again."; })
+      .then(function () { rzp.disabled = false; });
   });
 
   setCurrency("INR");

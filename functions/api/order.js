@@ -20,11 +20,22 @@ export async function onRequestPost({ request, env }) {
     body: JSON.stringify({ amount, currency: cur, receipt: "coffee_" + Date.now() })
   });
   const o = await r.json();
-  if (!r.ok) return out({ error: "gateway" }, 502);
+
+if (!r.ok) {
+  // Log the gateway's response for debugging.
+  // Do not log your Razorpay key or secret.
+  console.error("Razorpay order creation failed:", r.status, o);
+
+  return out({
+    error: "gateway",
+    status: r.status,
+    reason: o?.error?.description || o?.error?.reason || "Unknown Razorpay error"
+  }, 502);
+}
   return out({
   order_id: o.id,
   amount: o.amount,
   currency: o.currency,
   key: env.RAZORPAY_KEY_ID
-  });
+});
 }
