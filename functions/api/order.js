@@ -21,5 +21,10 @@ export async function onRequestPost({ request, env }) {
   });
   const o = await r.json();
   if (!r.ok) return out({ error: "gateway" }, 502);
-  return out({ id: o.id, amount: o.amount, currency: o.currency, key: env.RAZORPAY_KEY_ID });
+  return out({
+  order_id: o.id,
+  amount: o.amount,
+  currency: o.currency,
+  key: env.RAZORPAY_KEY_ID
+  });
 }
