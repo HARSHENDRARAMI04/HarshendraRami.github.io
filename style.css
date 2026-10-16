@@ -201,7 +201,16 @@ body{transition:background-color .6s,color .6s}
 .pick.bye{opacity:0}
 @keyframes pop{from{transform:scale(0) rotate(-40deg);opacity:0}}
 @keyframes bob{50%{transform:translate(.6rem,-.9rem) rotate(8deg)}}
-.toast{position:fixed;left:50%;bottom:1.5rem;transform:translateX(-50%);z-index:7;background:var(--ink);color:var(--bg);border:0;border-radius:999px;padding:.55rem 1.1rem;font:inherit;font-size:.92rem;cursor:pointer}
+/* the "tap to end" pill lives at the top so it never sits on top of the objects at the bottom */
+.toast{position:fixed;left:50%;top:calc(.75rem + env(safe-area-inset-top,0px));transform:translateX(-50%);z-index:7;max-width:calc(100vw - 1.5rem);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;background:var(--ink);color:var(--bg);border:0;border-radius:999px;padding:.45rem .95rem;font:inherit;font-size:.85rem;cursor:pointer;box-shadow:0 6px 18px rgba(0,0,0,.25)}
+[data-vibe="movies"] .toast{top:calc(9vh + .75rem)}
+.stage{margin-bottom:env(safe-area-inset-bottom,0px)}
+@media (max-width:719px),(max-height:540px){
+  .term{font-size:.72rem;padding:.5rem .7rem;min-height:4.2rem}
+  .qb{width:3.2rem;height:3.2rem;font-size:1.4rem;border-width:2px}
+  .cnt{font-size:.68rem}
+  .sw{width:1.9rem;height:1.9rem}
+}
 
 /* currency: overlapping rings, the chosen one steps forward */
 .coins{display:flex;align-items:center;margin:0 0 .4rem .6rem;padding:.4rem 0}

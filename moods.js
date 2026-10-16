@@ -52,6 +52,10 @@
   function upcoming() { if (pos >= deck.length) { deck = shuffle(deck[deck.length - 1]); pos = 0; } return deck[pos]; }
   function advance() { pos++; try { sessionStorage.setItem("moodDeck", JSON.stringify({ deck: deck, pos: pos })); } catch (e) {} }
 
+  /* Small or short screens get smaller objects, fewer particles and a tighter layout. */
+  function compact() { return matchMedia("(max-width: 719px), (max-height: 540px)").matches; }
+  function r(n) { return (n * (compact() ? 0.6 : 1)).toFixed(2) + "rem"; }
+
   /* ---- cursor, and one thing to play with per mood ---- */
   var CUR = { nature: "leaf", cat: "hand", bike: "bike", code: "code", movies: "clap", design: "nib", gym: "bell", gaming: "pad" };
   function cursorFor(key) {
@@ -71,9 +75,10 @@
   function at(el) { var r = el.getBoundingClientRect(); return [r.left + r.width / 2, r.top + r.height / 2]; }
   function replay(el, c) { el.classList.remove(c); void el.offsetWidth; el.classList.add(c); }
   function puff(x, y, name, n, dy, sp) {
+    n = Math.max(1, Math.ceil(n * (compact() ? 0.55 : 1)));
     for (var i = 0; i < n; i++) {
       var p = icon(name, "fxp pf");
-      p.style.setProperty("--s", "1.6rem"); p.style.setProperty("--px", x + "px"); p.style.setProperty("--py", y + "px");
+      p.style.setProperty("--s", compact() ? "1.2rem" : "1.6rem"); p.style.setProperty("--px", x + "px"); p.style.setProperty("--py", y + "px");
       p.style.setProperty("--dx", rnd(-sp, sp) + "px"); p.style.setProperty("--dy", dy * rnd(.7, 1.2) + "px");
       p.style.setProperty("--r", rnd(-180, 180) + "deg"); p.style.setProperty("--d", rnd(1.1, 1.8) + "s"); p.style.setProperty("--w", "0s");
       fx.appendChild(p); setTimeout(function (q) { q.remove(); }, 2000, p);
@@ -83,38 +88,38 @@
   var S = {
     nature: function () {
       add("A tree. Press to shake its leaves loose.", sv('<path d="M50 118V72M50 94l-15-14M50 86l14-12"/><circle cx="50" cy="40" r="26" fill="var(--bg)"/><circle cx="29" cy="58" r="17" fill="var(--bg)"/><circle cx="71" cy="58" r="17" fill="var(--bg)"/>', "", "0 0 100 120"),
-        "left:1rem;bottom:0;width:9rem", function (el) { replay(el, "shake"); var p = at(el); puff(p[0], p[1] - 30, "leaf", 14, 260, 150); });
+        "left:.5rem;bottom:0;width:" + r(9), function (el) { replay(el, "shake"); var p = at(el); puff(p[0], p[1] - 30, "leaf", 14, 260, 150); });
       var petals = [0, 72, 144, 216, 288].map(function (a) { return '<g transform="rotate(' + a + ' 50 48)"><ellipse class="pt" cx="50" cy="32" rx="8" ry="15" fill="var(--bg)"/></g>'; }).join("");
       add("A bud. Press to bloom.", sv('<path d="M50 118V58M50 100q-18-3-22-18 15 0 22 18"/>' + petals + '<circle cx="50" cy="48" r="5"/>', "", "0 0 100 120"),
-        "right:1.5rem;bottom:0;width:5.5rem", function (el) { el.classList.toggle("open"); if (el.classList.contains("open")) { var p = at(el); puff(p[0], p[1] - 40, "flower", 5, -90, 70); } });
+        "right:.75rem;bottom:0;width:" + r(5.5), function (el) { el.classList.toggle("open"); if (el.classList.contains("open")) { var p = at(el); puff(p[0], p[1] - 40, "flower", 5, -90, 70); } });
     },
     cat: function () {
       var n = 0;
-      add("A cat. Press to pet it.", sv(P.cat, "cat"), "right:12%;bottom:0;width:8rem;animation-delay:.8s", function (el) {
+      add("A cat. Press to pet it.", sv(P.cat, "cat"), "right:12%;bottom:0;animation-delay:.8s;width:" + r(8), function (el) {
         n++; replay(el, "pet"); var p = at(el); puff(p[0], p[1] - 30, "heart", 3, -130, 50); say("Purr x" + n);
       });
     },
     bike: function () {
-      add("A bike. Press to ride.", sv(P.bike), "left:1rem;bottom:0;width:6rem", function (el) {
+      add("A bike. Press to ride.", sv(P.bike), "left:.5rem;bottom:0;width:" + r(6), function (el) {
         if (el.classList.contains("go")) return; el.classList.add("go"); say("Ring ring!");
         el.addEventListener("animationend", function f(e) { if (e.animationName === "ride") { el.classList.remove("go"); el.removeEventListener("animationend", f); } });
       });
     },
     code: function () {
       var L = ["$ npm run coffee", "> brewing... done", '$ git commit -m "it works"', "> 0 bugs (suspicious)", "$ git push --force", "> nobody saw that"], i = 0, out = [];
-      var el = add("A terminal. Press to run the next command.", '<span class="term"></span>', "right:1rem;bottom:1rem;width:min(17rem,70vw)", function () { next(); });
-      function next() { out.push(L[i++ % L.length]); out = out.slice(-4); el.firstChild.textContent = out.join("\n"); }
+      var el = add("A terminal. Press to run the next command.", '<span class="term"></span>', "right:.75rem;bottom:.75rem;width:" + (compact() ? "min(15rem,calc(100vw - 1.5rem))" : "min(17rem,70vw)"), function () { next(); });
+      function next() { out.push(L[i++ % L.length]); out = out.slice(compact() ? -3 : -4); el.firstChild.textContent = out.join("\n"); }
       next();
     },
     movies: function () {
       add("A clapperboard. Press for action.", sv('<rect x="3" y="11" width="18" height="10" rx="1" fill="var(--bg)"/><g class="arm"><path d="M3 11V6.5h18V11" fill="var(--bg)"/><path d="M7 6.5L5 11M12 6.5L10 11M17 6.5L15 11"/></g>'),
-        "right:1.5rem;bottom:calc(9vh + 1rem);width:7rem", function (el) {
+        "right:.75rem;bottom:calc(9vh + .6rem);width:" + r(7), function (el) {
           el.classList.add("clap"); setTimeout(function () { el.classList.remove("clap"); }, 160);
           var f = document.createElement("div"); f.className = "flash"; fx.appendChild(f); setTimeout(function () { f.remove(); }, 600); say("Action!");
         });
     },
     design: function () {
-      var w = add("Pick an accent colour", "", "right:1.5rem;bottom:1.5rem;display:flex;gap:.6rem", null, "div");
+      var w = add("Pick an accent colour", "", "right:.75rem;bottom:.75rem;display:flex;gap:.5rem", null, "div");
       ["#E0246E", "#2F6BFF", "#FF8A00", "#11A36A"].forEach(function (c) {
         var b = document.createElement("button"); b.type = "button"; b.className = "sw"; b.style.background = c; b.setAttribute("aria-label", "Use colour " + c);
         b.onclick = function () { poke(); root.style.setProperty("--accent", c); var p = at(b); puff(p[0], p[1], "nib", 3, -70, 40); };
@@ -123,13 +128,13 @@
     },
     gym: function () {
       var n = 0;
-      add("A dumbbell. Press to lift.", sv(P.bell) + '<span class="cnt">0 reps</span>', "right:1.5rem;bottom:1.5rem;width:7rem", function (el) {
+      add("A dumbbell. Press to lift.", sv(P.bell) + '<span class="cnt">0 reps</span>', "right:.75rem;bottom:.75rem;width:" + r(7), function (el) {
         n++; el.querySelector(".cnt").textContent = n + " reps"; replay(el, "lift"); if (n % 10 === 0) say("Beast mode");
       });
     },
     gaming: function () {
       var s = 0;
-      add("A question block. Press to collect a coin.", '<span class="qb">?</span><span class="cnt">Score 0000</span>', "left:1.5rem;bottom:1.5rem", function (el) {
+      add("A question block. Press to collect a coin.", '<span class="qb">?</span><span class="cnt">Score 0000</span>', "left:.75rem;bottom:.75rem", function (el) {
         s += 100; el.querySelector(".cnt").textContent = "Score " + String(s).padStart(4, "0"); replay(el, "bump"); var p = at(el); puff(p[0], p[1] - 40, "coin", 1, -110, 10);
       });
     }
@@ -143,8 +148,9 @@
     root.setAttribute("data-vibe", key);
     root.style.setProperty("--cur", cursorFor(key));
     if (S[key]) S[key]();
-    for (var i = 0; i < v.n; i++) {
-      var p = icon(pickOne(v.icons), "fxp " + v.fx), s = v.fx === "cross" ? rnd(2.6, 3.6) : rnd(1.2, 2.2);
+    var cnt = compact() ? Math.ceil(v.n * 0.5) : v.n;
+    for (var i = 0; i < cnt; i++) {
+      var p = icon(pickOne(v.icons), "fxp " + v.fx), s = (v.fx === "cross" ? rnd(2.6, 3.6) : rnd(1.2, 2.2)) * (compact() ? 0.75 : 1);
       p.style.setProperty("--s", s + "rem");
       p.style.setProperty("--x", rnd(0, 95) + "%");
       p.style.setProperty("--y", rnd(55, 88) + "%");
