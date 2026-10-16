@@ -394,21 +394,59 @@
       var s = document.createElement("script"); s.src = "https://checkout.razorpay.com/v1/checkout.js"; s.onload = res; s.onerror = rej; document.head.appendChild(s);
     });
   }
+
   rzp.addEventListener("click", function () {
     if (amount <= 0) return;
+
     rzp.disabled = true;
-    fetch(sp.checkoutEndpoint, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ amount: amount, currency: cur }) })
-      .then(function (r) { return r.json(); })
-      .then(function (o) {
-        if (!o.id) throw new Error("no order");
-        return loadRzp().then(function () {
-          new window.Razorpay({ key: o.key, order_id: o.id, amount: o.amount, currency: o.currency, name: name, description: "Buy me a coffee",
-            theme: { color: "#3340E8" }, handler: function () { rzp.textContent = "Thank you!"; } }).open();
+
+    fetch(sp.checkoutEndpoint, {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ amount: amount, currency: cur })
+    })
+      .then(function (r) {
+        return r.json().then(function (o) {
+          if (!r.ok) {
+            throw new Error(o.error || "Order creation failed");
+          }
+          return o;
         });
       })
-      .catch(function () { rzp.textContent = "Could not start payment. Try again."; })
-      .then(function () { rzp.disabled = false; });
+      .then(function (o) {
+        // Support both response formats.
+        var orderId = o.order_id || o.id;
+
+        if (!orderId || !o.key || !o.amount || !o.currency) {
+          throw new Error("Incomplete Razorpay order response");
+        }
+
+        return loadRzp().then(function () {
+          var checkout = new window.Razorpay({
+            key: o.key,
+            order_id: orderId,
+            amount: o.amount,
+            currency: o.currency,
+            name: name,
+            description: "Buy me a coffee",
+            theme: { color: "#3340E8" },
+            handler: function () {
+              rzp.textContent = "Thank you!";
+            }
+          });
+
+          checkout.open();
+        });
+      })
+      .catch(function (err) {
+        console.error("Razorpay checkout error:", err);
+        rzp.textContent = "Could not start payment. Try again.";
+      })
+      .then(function () {
+        rzp.disabled = false;
+      });
   });
+
 
   setCurrency("INR");
   /* live rates are written daily by the sync job; the fallback rates in data.js cover any gap */
