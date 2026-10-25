@@ -12,7 +12,8 @@ window.SITE = {
   name: "Harshendra Rami",
   greeting: "Hi, I'm",   // small line above your name in the hero
   photo: "",             // optional: e.g. "img/me.jpg" (square, ~400px). A face makes it personal.
-  status: "",            // top-left note. Leave "" to auto-show your newest "Building" product.
+  status: "",
+  idleStatus: "Open to new projects",   // shown top-left when no product has the status "Building"// top-left note. Leave "" to auto-show your newest "Building" product.
   role: "Data engineer and tool maker",
   intro:
     "I move data for a living. On the side I build stuff that makes everyday things a little nicer.",
@@ -53,16 +54,16 @@ window.SITE = {
     {
       name: "Guitar practice tool",
       type: "Extension",
-      status: "Building",
+      status: "Live",
       tagline: "Loop the hard part until it's clean.",
       description:
-        "A browser extension that controls the video playing in your active tab, built for learning songs by ear and practising along.",
+        "Loop any part of a song, slow it down, get a count-in and a metronome. Practise guitar, piano, drums, vocals and any instrument.",
       features: [
         "Countdown before playback starts",
         "A–B loop for any section",
         "Works on the tab you already have open"
       ],
-      links: [{ label: "Get the extension", url: "", primary: true }]
+      links: [{ label: "Get the extension", url: "https://chromewebstore.google.com/detail/music-guitar-practice-loo/ikpladmdfbiknhohoaaloohjgcdkbbbd", primary: true }]
     }
   ],
 
