@@ -52,7 +52,7 @@
   if (greet && isUrl(S.photo)) greet.appendChild(h("img", { class: "photo", src: S.photo, alt: "Portrait of " + name, width: 56, height: 56 }));
   if (greet) { if (S.greeting) greet.appendChild(h("span", { text: S.greeting })); else greet.hidden = true; }
   var building = (S.products || []).filter(function (p) { return /building/i.test(p.status || ""); })[0];
-  var st = S.status || (building ? "Now building: " + building.name : "");
+  var st = S.status || (building ? "Now building: " + building.name : (S.idleStatus || "Open to new projects"));
   if (st) $("#status").textContent = st; else $("#status").parentNode.hidden = true;
   if ($("#intro")) $("#intro").textContent = S.intro || "";
   $("#copyright").textContent = "\u00A9 " + new Date().getFullYear() + " " + name;
